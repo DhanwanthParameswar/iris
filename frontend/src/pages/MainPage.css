@@ -1,0 +1,139 @@
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #E5E7EB; /* Light gray background to see the app */
+    font-family: 'Poppins', sans-serif;
+}
+
+.iris-app-container {
+    width: 440px;
+    height: 956px;
+    background: linear-gradient(0deg, #F9FAFB 0%, #F9FAFB 100%), white;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    display: flex;
+    position: relative; /* Allows absolute positioning for content */
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 24px; /* Added for a nicer look */
+}
+
+.iris-header {
+    width: 100%;
+    height: 115px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.logo {
+    color: #1F2937;
+    font-size: 48px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    line-height: 28px; /* Note: This line height is very tight for a 48px font */
+}
+
+.iris-content {
+    width: 440px;
+    height: 849px;
+    padding: 19px 40px 77px 40px;
+    left: 0;
+    top: 54px; /* This content block overlaps the header, as in your code */
+    position: absolute;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    display: flex;
+    box-sizing: border-box; /* Ensures padding doesn't break layout */
+}
+
+.hero-image {
+    width: 212px;
+    height: 196px;
+    border-radius: 106px; /* 50% of width/height = circle */
+    object-fit: cover; /* Prevents image stretching */
+}
+
+.headline-container {
+    align-self: stretch;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    display: flex;
+}
+
+/* Shared styles for headline parts */
+.headline, .headline-primary {
+    text-align: center;
+    font-size: 39px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    line-height: 45px;
+}
+
+.headline {
+    color: #1F2937;
+}
+
+.headline-primary {
+    color: #1287FF;
+}
+
+.description-container {
+    width: 100%;
+    padding-bottom: 10px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    display: flex;
+}
+
+.description {
+    align-self: stretch;
+    text-align: center;
+    color: #6B7280;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    line-height: 20px;
+    margin: 0; /* Remove default paragraph margin */
+}
+
+.button-container {
+    padding: 12px 32px;
+    background: #1287FF;
+    box-shadow: 0px 4px 6px -4px rgba(0, 0, 0, 0.10);
+    overflow: hidden;
+    border-radius: 16px;
+    justify-content: center;
+    align-items: center;
+    display: inline-flex;
+    cursor: pointer;
+    text-decoration: none; /* Removes underline from link */
+    transition: all 0.2s ease;
+}
+
+.button-container:hover {
+    background: #0070e0; /* Darker blue on hover */
+    transform: translateY(-2px); /* Slight lift on hover */
+    box-shadow: 0px 6px 10px -4px rgba(0, 0, 0, 0.15);
+}
+
+.button-text {
+    text-align: center;
+    color: white;
+    font-size: 18px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    line-height: 28px;
+}
