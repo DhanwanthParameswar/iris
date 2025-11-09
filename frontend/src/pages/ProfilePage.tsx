@@ -1,87 +1,87 @@
 function ProfilePage() {
     return (
-        <div className="w-96 h-[956px] p-5 bg-slate-50 inline-flex flex-col justify-start items-start">
-        <div className="self-stretch flex-1 px-5 inline-flex justify-center items-center">
-            <div className="flex-1 h-[903px] inline-flex flex-col justify-center items-center">
-            <div className="self-stretch flex flex-col justify-center items-center gap-2">
-                <div className="self-stretch flex flex-col justify-start items-start">
-                <div className="self-stretch text-center justify-center text-slate-900 text-4xl font-bold font-['Sora'] leading-10">Your Profile</div>
-                </div>
-                <div className="self-stretch py-5 flex flex-col justify-start items-start">
-                <div className="self-stretch h-6 text-center justify-center text-slate-500 text-base font-normal font-['Poppins'] leading-6">Enter your personal information and resume.</div>
-                </div>
-            </div>
-            <div className="self-stretch flex flex-col justify-start items-start gap-8">
-                <div className="self-stretch flex flex-col justify-start items-center gap-8">
-                <div className="self-stretch h-64 flex flex-col justify-start items-start gap-6">
-                    <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                    <div className="self-stretch flex flex-col justify-start items-start">
-                        <div className="self-stretch justify-center text-slate-600 text-sm font-medium font-['Poppins'] leading-5">Full Name</div>
-                    </div>
-                    <div className="self-stretch px-3 py-2 bg-slate-50 rounded-lg outline outline-1 outline-offset-[-1px] outline-slate-300 flex flex-col justify-start items-start overflow-hidden">
-                        <div className="self-stretch flex flex-col justify-start items-start overflow-hidden">
-                        <div className="self-stretch justify-center text-slate-800 text-base font-normal font-['Poppins'] leading-6">Alex Doe</div>
-                        </div>
-                    </div>
-                    </div>
-                    <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                    <div className="self-stretch flex flex-col justify-start items-start">
-                        <div className="self-stretch justify-center text-slate-600 text-sm font-medium font-['Poppins'] leading-5">Email Address</div>
-                    </div>
-                    <div className="self-stretch px-3 py-2 bg-slate-50 rounded-lg outline outline-1 outline-offset-[-1px] outline-slate-300 flex flex-col justify-start items-start overflow-hidden">
-                        <div className="self-stretch flex flex-col justify-start items-start overflow-hidden">
-                        <div className="self-stretch justify-center text-slate-800 text-base font-normal font-['Poppins'] leading-6">alex.doe@example.com</div>
-                        </div>
-                    </div>
-                    </div>
-                    <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                    <div className="self-stretch flex flex-col justify-start items-start">
-                        <div className="self-stretch justify-center text-slate-600 text-sm font-medium font-['Poppins'] leading-5">Phone Number</div>
-                    </div>
-                    <div className="self-stretch px-3 py-2 bg-slate-50 rounded-lg outline outline-1 outline-offset-[-1px] outline-slate-300 flex flex-col justify-start items-start overflow-hidden">
-                        <div className="self-stretch flex flex-col justify-start items-start overflow-hidden">
-                        <div className="self-stretch justify-center text-slate-800 text-base font-normal font-['Poppins'] leading-6">+1 (555) 123-4567</div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                <div className="self-stretch h-64 flex flex-col justify-start items-start">
-                    <div className="self-stretch pb-2 flex flex-col justify-start items-start">
-                    <div className="self-stretch flex flex-col justify-start items-start">
-                        <div className="self-stretch justify-center text-slate-600 text-sm font-medium font-['Poppins'] leading-5">Your Resume</div>
-                    </div>
-                    </div>
-                    <div className="self-stretch h-56 p-0.5 bg-slate-50 rounded-lg outline outline-2 outline-offset-[-2px] outline-slate-300 flex flex-col justify-center items-center">
-                    <div className="w-64 h-40 relative">
-                        <div className="left-[111.73px] top-[29px] absolute inline-flex flex-col justify-start items-start">
-                        <div className="w-10 h-7 outline outline-[3px] outline-offset-[-1.50px] outline-slate-400" />
-                        </div>
-                        <div className="pb-2 left-[16px] top-[68px] absolute inline-flex flex-col justify-start items-start">
-                        <div className="flex flex-col justify-start items-center">
-                            <div className="text-center justify-center"><span className="text-slate-500 text-sm font-semibold font-['Poppins'] leading-5">Click to upload</span><span className="text-slate-500 text-sm font-normal font-['Poppins'] leading-5"> or drag and drop</span></div>
-                        </div>
-                        </div>
-                        <div className="left-[48.55px] top-[96px] absolute inline-flex flex-col justify-start items-center">
-                        <div className="text-center justify-center text-slate-500 text-xs font-normal font-['Poppins'] leading-4">PDF, DOC, DOCX (MAX. 5MB)</div>
-                        </div>
-                        <div className="pt-4 left-[43.66px] top-[112px] absolute inline-flex flex-col justify-start items-start">
-                        <div className="flex flex-col justify-start items-center">
-                            <div className="text-center justify-center text-sky-500 text-xs font-medium font-['Poppins'] leading-4">resume_alex_doe_2024.pdf</div>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-                <div className="self-stretch pt-4 relative border-t border-slate-200 inline-flex justify-end items-start">
-                <div className="w-40 h-12 px-6 py-3 left-[95px] top-[17px] absolute bg-sky-500 rounded-2xl shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex justify-center items-center gap-2.5">
-                    <div className="text-center justify-center text-white text-lg font-semibold font-['Sora'] leading-6">Confirm</div>
-                </div>
-                </div>
-            </div>
-            </div>
+<div style={{width: 440, height: 956, padding: 20, background: 'linear-gradient(0deg, #F8FAFC 0%, #F8FAFC 100%), white', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'inline-flex'}}>
+  <div style={{alignSelf: 'stretch', flex: '1 1 0', paddingLeft: 21, paddingRight: 21, justifyContent: 'center', alignItems: 'center', display: 'inline-flex'}}>
+    <div style={{flex: '1 1 0', height: 903, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', display: 'inline-flex'}}>
+      <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 8, display: 'flex'}}>
+        <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+          <div style={{alignSelf: 'stretch', textAlign: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#0F172A', fontSize: 36, fontFamily: 'Sora', fontWeight: '700', lineHeight: 40, wordWrap: 'break-word'}}>Your Profile</div>
         </div>
+        <div style={{alignSelf: 'stretch', paddingTop: 21, paddingBottom: 21, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+          <div style={{alignSelf: 'stretch', height: 24, textAlign: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#64748B', fontSize: 16, fontFamily: 'Poppins', fontWeight: '400', lineHeight: 24, wordWrap: 'break-word'}}>Enter your personal information and resume.</div>
         </div>
+      </div>
+      <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 32, display: 'flex'}}>
+        <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', gap: 32, display: 'flex'}}>
+          <div style={{alignSelf: 'stretch', height: 258, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 24, display: 'flex'}}>
+            <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 8, display: 'flex'}}>
+              <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+                <div style={{alignSelf: 'stretch', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#475569', fontSize: 14, fontFamily: 'Poppins', fontWeight: '500', lineHeight: 20, wordWrap: 'break-word'}}>Full Name</div>
+              </div>
+              <div style={{alignSelf: 'stretch', paddingLeft: 13, paddingRight: 13, paddingTop: 9, paddingBottom: 9, background: '#F8FAFC', overflow: 'hidden', borderRadius: 8, outline: '1px #CBD5E1 solid', outlineOffset: '-1px', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+                <div style={{alignSelf: 'stretch', overflow: 'hidden', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+                  <div style={{alignSelf: 'stretch', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#1E293B', fontSize: 16, fontFamily: 'Poppins', fontWeight: '400', lineHeight: 24, wordWrap: 'break-word'}}>Alex Doe</div>
+                </div>
+              </div>
+            </div>
+            <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 8, display: 'flex'}}>
+              <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+                <div style={{alignSelf: 'stretch', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#475569', fontSize: 14, fontFamily: 'Poppins', fontWeight: '500', lineHeight: 20, wordWrap: 'break-word'}}>Email Address</div>
+              </div>
+              <div style={{alignSelf: 'stretch', paddingLeft: 13, paddingRight: 13, paddingTop: 9, paddingBottom: 9, background: '#F8FAFC', overflow: 'hidden', borderRadius: 8, outline: '1px #CBD5E1 solid', outlineOffset: '-1px', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+                <div style={{alignSelf: 'stretch', overflow: 'hidden', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+                  <div style={{alignSelf: 'stretch', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#1E293B', fontSize: 16, fontFamily: 'Poppins', fontWeight: '400', lineHeight: 24, wordWrap: 'break-word'}}>alex.doe@example.com</div>
+                </div>
+              </div>
+            </div>
+            <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 8, display: 'flex'}}>
+              <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+                <div style={{alignSelf: 'stretch', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#475569', fontSize: 14, fontFamily: 'Poppins', fontWeight: '500', lineHeight: 20, wordWrap: 'break-word'}}>Phone Number</div>
+              </div>
+              <div style={{alignSelf: 'stretch', paddingLeft: 13, paddingRight: 13, paddingTop: 9, paddingBottom: 9, background: '#F8FAFC', overflow: 'hidden', borderRadius: 8, outline: '1px #CBD5E1 solid', outlineOffset: '-1px', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+                <div style={{alignSelf: 'stretch', overflow: 'hidden', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+                  <div style={{alignSelf: 'stretch', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#1E293B', fontSize: 16, fontFamily: 'Poppins', fontWeight: '400', lineHeight: 24, wordWrap: 'break-word'}}>+1 (555) 123-4567</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style={{alignSelf: 'stretch', height: 258, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+            <div style={{alignSelf: 'stretch', paddingBottom: 8, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+              <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+                <div style={{alignSelf: 'stretch', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#475569', fontSize: 14, fontFamily: 'Poppins', fontWeight: '500', lineHeight: 20, wordWrap: 'break-word'}}>Your Resume</div>
+              </div>
+            </div>
+            <div style={{alignSelf: 'stretch', height: 230, padding: 2, background: '#F8FAFC', borderRadius: 8, outline: '2px #CBD5E1 solid', outlineOffset: '-2px', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', display: 'flex'}}>
+              <div style={{width: 262.48, height: 168, position: 'relative'}}>
+                <div style={{left: 111.73, top: 29, position: 'absolute', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'inline-flex'}}>
+                  <div style={{width: 39, height: 30, outline: '3px #94A3B8 solid', outlineOffset: '-1.50px'}} />
+                </div>
+                <div style={{paddingBottom: 8, left: 16, top: 68, position: 'absolute', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'inline-flex'}}>
+                  <div style={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', display: 'flex'}}>
+                    <div style={{textAlign: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column'}}><span style={{color: '#64748B', fontSize: 14, fontFamily: 'Poppins', fontWeight: '600', lineHeight: 20, wordWrap: 'break-word'}}>Click to upload</span><span style={{color: '#64748B', fontSize: 14, fontFamily: 'Poppins', fontWeight: '400', lineHeight: 20, wordWrap: 'break-word'}}> or drag and drop</span></div>
+                  </div>
+                </div>
+                <div style={{left: 48.55, top: 96, position: 'absolute', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', display: 'inline-flex'}}>
+                  <div style={{textAlign: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#64748B', fontSize: 12, fontFamily: 'Poppins', fontWeight: '400', lineHeight: 16, wordWrap: 'break-word'}}>PDF, DOC, DOCX (MAX. 5MB)</div>
+                </div>
+                <div style={{paddingTop: 16, left: 43.66, top: 112, position: 'absolute', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'inline-flex'}}>
+                  <div style={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', display: 'flex'}}>
+                    <div style={{textAlign: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#1287FF', fontSize: 12, fontFamily: 'Poppins', fontWeight: '500', lineHeight: 16, wordWrap: 'break-word'}}>resume_alex_doe_2024.pdf</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{alignSelf: 'stretch', paddingTop: 17, position: 'relative', borderTop: '1px #E2E8F0 solid', justifyContent: 'flex-end', alignItems: 'flex-start', display: 'inline-flex'}}>
+          <div style={{width: 168, height: 50, paddingLeft: 25, paddingRight: 25, paddingTop: 13, paddingBottom: 13, left: 95, top: 17, position: 'absolute', background: '#1287FF', boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)', borderRadius: 16, justifyContent: 'center', alignItems: 'center', gap: 10, display: 'flex'}}>
+            <div style={{textAlign: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: 'white', fontSize: 18, fontFamily: 'Sora', fontWeight: '600', lineHeight: 24, wordWrap: 'break-word'}}>Confirm</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
     );
 }
 

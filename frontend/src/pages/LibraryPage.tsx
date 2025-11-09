@@ -1,69 +1,69 @@
 function LibraryPage() {
     return (
-        <div className="w-96 h-[956px] px-10 py-7 relative bg-white inline-flex flex-col justify-start items-center gap-2.5 overflow-hidden">
-        <div className="self-stretch pt-5 flex flex-col justify-start items-center gap-4">
-            <div className="self-stretch h-11 relative inline-flex justify-start items-center gap-3.5">
-            <div className="w-8 h-8 outline outline-[2.50px] outline-offset-[-1.25px] outline-sky-500" />
-            <div className="inline-flex flex-col justify-start items-start">
-                <div className="self-stretch flex flex-col justify-start items-start">
-                <div className="justify-center text-slate-900 text-2xl font-semibold font-['Sora'] leading-6">Alex Doe</div>
-                </div>
-            </div>
-            <div className="px-2.5 py-0.5 left-[311px] top-[3.50px] absolute inline-flex flex-col justify-center items-end">
-                <div className="w-7 h-9 relative">
-                <div className="w-7 h-7 left-[1px] top-[3.50px] absolute outline outline-[2.50px] outline-offset-[-1.25px] outline-black" />
-                <div className="w-2.5 h-2.5 left-[10.01px] top-[13.17px] absolute outline outline-[2.50px] outline-offset-[-1.25px] outline-black" />
-                </div>
-            </div>
-            </div>
-            <div className="self-stretch py-1 flex flex-col justify-start items-start">
-            <div className="self-stretch h-11 min-w-40 flex flex-col justify-center items-start">
-                <div className="self-stretch flex-1 rounded-lg inline-flex justify-start items-start">
-                <div className="self-stretch pl-3 py-px bg-white rounded-tl-lg rounded-bl-lg border-l border-t border-b border-slate-300 flex justify-center items-center">
-                    <div className="py-0.5 inline-flex flex-col justify-start items-start">
-                    <div className="w-5 h-6 relative">
-                        <div className="w-3.5 h-3.5 left-[2.50px] top-[4.50px] absolute bg-slate-500" />
-                    </div>
-                    </div>
-                </div>
-                <div className="flex-1 self-stretch relative bg-white rounded-tr-lg rounded-br-lg border-r border-t border-b border-slate-300 overflow-hidden">
-                    <div className="h-3.5 pr-20 left-[8px] top-[12px] absolute inline-flex flex-col justify-start items-center overflow-hidden">
-                    <div className="justify-center text-slate-500 text-sm font-normal font-['Poppins']">Search conversations...</div>
-                    </div>
-                    <div className="w-56 h-4 left-[8px] top-[13.50px] absolute" />
-                </div>
-                </div>
-            </div>
-            </div>
-            <div className="self-stretch flex flex-col justify-start items-start gap-1">
-            <div className="self-stretch px-3 py-2 bg-blue-500/10 rounded-lg inline-flex justify-start items-center gap-3">
-                <div className="py-0.5 inline-flex flex-col justify-start items-start">
-                <div className="w-5 h-6 relative">
-                    <div className="w-5 h-4 left-[0.25px] top-[3px] absolute outline outline-[1.50px] outline-offset-[-0.75px] outline-black" />
-                </div>
-                </div>
-                <div className="inline-flex flex-col justify-start items-start">
-                <div className="justify-center text-slate-900 text-sm font-medium font-['Poppins'] leading-5">Amazon</div>
-                </div>
-            </div>
-            <div className="self-stretch px-3 py-2 rounded-lg inline-flex justify-start items-center gap-3">
-                <div className="py-0.5 inline-flex flex-col justify-start items-start">
-                <div className="w-5 h-6 relative">
-                    <div className="w-5 h-4 left-[0.25px] top-[3px] absolute outline outline-[1.50px] outline-offset-[-0.75px] outline-slate-500" />
-                </div>
-                </div>
-                <div className="inline-flex flex-col justify-start items-start">
-                <div className="justify-center text-slate-600 text-sm font-normal font-['Poppins'] leading-5">Google</div>
-                </div>
-            </div>
-            </div>
+<div style={{width: 440, height: 956, paddingLeft: 40, paddingRight: 40, paddingTop: 30, paddingBottom: 30, position: 'relative', background: 'white', overflow: 'hidden', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', gap: 10, display: 'inline-flex'}}>
+  <div style={{alignSelf: 'stretch', paddingTop: 20, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', gap: 16, display: 'flex'}}>
+    <div style={{alignSelf: 'stretch', height: 45, position: 'relative', justifyContent: 'flex-start', alignItems: 'center', gap: 15, display: 'inline-flex'}}>
+      <div style={{width: 32, height: 32, outline: '2.50px #1287FF solid', outlineOffset: '-1.25px'}} />
+      <div style={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'inline-flex'}}>
+        <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+          <div style={{justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#0F172A', fontSize: 24, fontFamily: 'Sora', fontWeight: '600', lineHeight: 24, wordWrap: 'break-word'}}>Alex Doe</div>
         </div>
-        <div className="w-36 h-36 left-[290px] top-[806px] absolute">
-            <div className="w-24 h-24 left-0 top-0 absolute bg-sky-500 rounded-[20px] inline-flex justify-center items-center overflow-hidden">
-            <div className="w-9 h-9 outline outline-[6px] outline-offset-[-3px] outline-white" />
+      </div>
+      <div style={{paddingLeft: 10, paddingRight: 10, paddingTop: 2, paddingBottom: 2, left: 311, top: 3.50, position: 'absolute', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-end', display: 'inline-flex'}}>
+        <div style={{width: 29, height: 35, position: 'relative'}}>
+          <div style={{width: 27.69, height: 29, left: 1, top: 3.50, position: 'absolute', outline: '2.50px black solid', outlineOffset: '-1.25px'}} />
+          <div style={{width: 9.67, height: 9.67, left: 10.01, top: 13.17, position: 'absolute', outline: '2.50px black solid', outlineOffset: '-1.25px'}} />
+        </div>
+      </div>
+    </div>
+    <div style={{alignSelf: 'stretch', paddingTop: 4, paddingBottom: 4, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+      <div style={{alignSelf: 'stretch', height: 44, minWidth: 160, flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', display: 'flex'}}>
+        <div style={{alignSelf: 'stretch', flex: '1 1 0', borderRadius: 8, justifyContent: 'flex-start', alignItems: 'flex-start', display: 'inline-flex'}}>
+          <div style={{alignSelf: 'stretch', paddingTop: 1, paddingBottom: 1, paddingLeft: 13, background: 'white', borderTopLeftRadius: 8, borderBottomLeftRadius: 8, borderLeft: '1px #CBD5E1 solid', borderTop: '1px #CBD5E1 solid', borderBottom: '1px #CBD5E1 solid', justifyContent: 'center', alignItems: 'center', display: 'flex'}}>
+            <div style={{paddingTop: 2, paddingBottom: 2, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'inline-flex'}}>
+              <div style={{width: 20, height: 24, position: 'relative'}}>
+                <div style={{width: 15, height: 15, left: 2.50, top: 4.50, position: 'absolute', background: '#64748B'}} />
+              </div>
             </div>
+          </div>
+          <div style={{flex: '1 1 0', alignSelf: 'stretch', position: 'relative', background: 'white', overflow: 'hidden', borderTopRightRadius: 8, borderBottomRightRadius: 8, borderTop: '1px #CBD5E1 solid', borderRight: '1px #CBD5E1 solid', borderBottom: '1px #CBD5E1 solid'}}>
+            <div style={{height: 15, paddingRight: 73.73, left: 8, top: 12, position: 'absolute', overflow: 'hidden', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', display: 'inline-flex'}}>
+              <div style={{justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#64748B', fontSize: 14, fontFamily: 'Poppins', fontWeight: '400', wordWrap: 'break-word'}}>Search conversations...</div>
+            </div>
+            <div style={{width: 229, height: 17, left: 8, top: 13.50, position: 'absolute'}} />
+          </div>
         </div>
+      </div>
+    </div>
+    <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 4, display: 'flex'}}>
+      <div style={{alignSelf: 'stretch', paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8, background: 'rgba(37, 140, 244, 0.10)', borderRadius: 8, justifyContent: 'flex-start', alignItems: 'center', gap: 12, display: 'inline-flex'}}>
+        <div style={{paddingTop: 2, paddingBottom: 2, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'inline-flex'}}>
+          <div style={{width: 20, height: 24, position: 'relative'}}>
+            <div style={{width: 19.50, height: 18, left: 0.25, top: 3, position: 'absolute', outline: '1.50px black solid', outlineOffset: '-0.75px'}} />
+          </div>
         </div>
+        <div style={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'inline-flex'}}>
+          <div style={{justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#0F172A', fontSize: 14, fontFamily: 'Poppins', fontWeight: '500', lineHeight: 21, wordWrap: 'break-word'}}>Amazon</div>
+        </div>
+      </div>
+      <div style={{alignSelf: 'stretch', paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8, borderRadius: 8, justifyContent: 'flex-start', alignItems: 'center', gap: 12, display: 'inline-flex'}}>
+        <div style={{paddingTop: 2, paddingBottom: 2, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'inline-flex'}}>
+          <div style={{width: 20, height: 24, position: 'relative'}}>
+            <div style={{width: 19.50, height: 18, left: 0.25, top: 3, position: 'absolute', outline: '1.50px #64748B solid', outlineOffset: '-0.75px'}} />
+          </div>
+        </div>
+        <div style={{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'inline-flex'}}>
+          <div style={{justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#475569', fontSize: 14, fontFamily: 'Poppins', fontWeight: '400', lineHeight: 21, wordWrap: 'break-word'}}>Google</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style={{width: 150, height: 150, left: 290, top: 806, position: 'absolute'}}>
+    <div style={{width: 100, height: 100, left: 0, top: 0, position: 'absolute', background: '#1287FF', overflow: 'hidden', borderRadius: 20, justifyContent: 'center', alignItems: 'center', display: 'inline-flex'}}>
+      <div style={{width: 35, height: 35, outline: '6px white solid', outlineOffset: '-3px'}} />
+    </div>
+  </div>
+</div>
     );
 }
 

@@ -1,28 +1,28 @@
 function MainPage() {
     return (       
-        <div className="w-96 h-[956px] bg-gray-50 inline-flex flex-col justify-start items-start">
-        <div className="self-stretch flex-1 relative flex flex-col justify-start items-center">
-            <div className="self-stretch h-28 px-48 py-6 flex flex-col justify-end items-center">
-            <div className="w-full max-w-[1536px] pr-[0.01px] inline-flex justify-between items-center">
-                <div className="flex justify-start items-center gap-2">
-                <div className="justify-center text-gray-800 text-5xl font-bold font-['Sora'] leading-7">Iris</div>
-                </div>
-            </div>
-            </div>
-            <div className="w-96 h-[849px] px-10 pt-5 pb-20 left-0 top-[54px] absolute flex flex-col justify-center items-center gap-5">
-            <img className="w-52 h-48 rounded-[106px]" src="https://placehold.co/212x196" />
-            <div className="self-stretch flex flex-col justify-start items-center">
-                <div className="self-stretch text-center justify-center"><span className="text-gray-800 text-4xl font-bold font-['Sora'] leading-10">Meet Your New </span><span className="text-sky-500 text-4xl font-bold font-['Sora'] leading-10">AI<br/>Companion</span></div>
-            </div>
-            <div className="w-full max-w-[576px] pb-2.5 flex flex-col justify-start items-center">
-                <div className="self-stretch text-center justify-center text-gray-500 text-xs font-normal font-['Poppins'] leading-5">Start a conversation and discover a smarter way to get things done. Our friendly AI is here to assist you 24/7.</div>
-            </div>
-            <div className="px-8 py-3 bg-sky-500 rounded-2xl shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] shadow-lg inline-flex justify-center items-center overflow-hidden">
-                <div className="text-center justify-center text-white text-lg font-semibold font-['Sora'] leading-7">Start Chatting Now</div>
-            </div>
-            </div>
+<div style={{width: 440, height: 956, background: 'linear-gradient(0deg, #F9FAFB 0%, #F9FAFB 100%), white', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'inline-flex'}}>
+  <div style={{alignSelf: 'stretch', flex: '1 1 0', position: 'relative', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', display: 'flex'}}>
+    <div style={{alignSelf: 'stretch', height: 115, paddingLeft: 192, paddingRight: 192, paddingTop: 24, paddingBottom: 24, flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center', display: 'flex'}}>
+      <div style={{width: '100%', maxWidth: 1536, paddingRight: 0.01, justifyContent: 'space-between', alignItems: 'center', display: 'inline-flex'}}>
+        <div style={{justifyContent: 'flex-start', alignItems: 'center', gap: 8, display: 'flex'}}>
+          <div style={{justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#1F2937', fontSize: 48, fontFamily: 'Sora', fontWeight: '700', lineHeight: 28, wordWrap: 'break-word'}}>Iris</div>
         </div>
-        </div>
+      </div>
+    </div>
+    <div style={{width: 440, height: 849, paddingTop: 19, paddingBottom: 77, paddingLeft: 40, paddingRight: 40, left: 0, top: 54, position: 'absolute', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 20, display: 'flex'}}>
+      <img style={{width: 212, height: 196, borderRadius: 106}} src="https://placehold.co/212x196" />
+      <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', display: 'flex'}}>
+        <div style={{alignSelf: 'stretch', textAlign: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column'}}><span style={{color: '#1F2937', fontSize: 39, fontFamily: 'Sora', fontWeight: '700', lineHeight: 45, wordWrap: 'break-word'}}>Meet Your New </span><span style={{color: '#1287FF', fontSize: 39, fontFamily: 'Sora', fontWeight: '700', lineHeight: 45, wordWrap: 'break-word'}}>AI<br/>Companion</span></div>
+      </div>
+      <div style={{width: '100%', maxWidth: 576, paddingBottom: 10, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', display: 'flex'}}>
+        <div style={{alignSelf: 'stretch', textAlign: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#6B7280', fontSize: 12, fontFamily: 'Poppins', fontWeight: '400', lineHeight: 20, wordWrap: 'break-word'}}>Start a conversation and discover a smarter way to get things done. Our friendly AI is here to assist you 24/7.</div>
+      </div>
+      <div style={{paddingLeft: 32, paddingRight: 32, paddingTop: 12, paddingBottom: 12, background: '#1287FF', boxShadow: '0px 4px 6px -4px rgba(0, 0, 0, 0.10)', overflow: 'hidden', borderRadius: 16, justifyContent: 'center', alignItems: 'center', display: 'inline-flex'}}>
+        <div style={{textAlign: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: 'white', fontSize: 18, fontFamily: 'Sora', fontWeight: '600', lineHeight: 28, wordWrap: 'break-word'}}>Start Chatting Now</div>
+      </div>
+    </div>
+  </div>
+</div>
     );
 }
 

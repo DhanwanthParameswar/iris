@@ -1,41 +1,41 @@
 function AnalysisPage() {
     return (
-        <div className="w-96 h-[956px] p-5 bg-slate-50 inline-flex flex-col justify-start items-start">
-        <div className="self-stretch flex-1 px-5 inline-flex justify-center items-center">
-            <div className="flex-1 h-[903px] pt-20 relative inline-flex flex-col justify-start items-center">
-            <div className="self-stretch flex flex-col justify-center items-center gap-2">
-                <div className="self-stretch flex flex-col justify-start items-start">
-                <div className="self-stretch text-center justify-center text-slate-900 text-4xl font-bold font-['Poppins'] leading-10">Analysis Results</div>
-                </div>
-                <div className="self-stretch h-16 py-5" />
-            </div>
-            <div className="self-stretch h-[555px] pb-5 flex flex-col justify-start items-start gap-8 overflow-hidden">
-                <div className="self-stretch h-36 flex flex-col justify-start items-start gap-2">
-                <div className="self-stretch flex-1 px-3 py-2 bg-slate-50 rounded-lg outline outline-1 outline-offset-[-1px] outline-slate-300 flex flex-col justify-start items-start overflow-hidden">
-                    <div className="self-stretch flex flex-col justify-start items-start overflow-hidden">
-                    <div className="justify-center text-black text-lg font-semibold font-['Sora'] leading-6">Summary</div>
-                    </div>
-                </div>
-                </div>
-                <div className="self-stretch h-32 flex flex-col justify-start items-start gap-2">
-                <div className="self-stretch flex-1 px-3 py-2 bg-slate-50 rounded-lg outline outline-1 outline-offset-[-1px] outline-slate-300 flex flex-col justify-start items-start overflow-hidden">
-                    <div className="w-60 h-8 justify-center text-black text-lg font-semibold font-['Sora'] leading-6">Follow Up</div>
-                </div>
-                </div>
-                <div className="self-stretch h-32 flex flex-col justify-start items-start gap-2">
-                <div className="self-stretch flex-1 px-3 py-2 bg-slate-50 rounded-lg outline outline-1 outline-offset-[-1px] outline-slate-300 flex flex-col justify-start items-start overflow-hidden">
-                    <div className="w-60 h-8 justify-center text-black text-lg font-semibold font-['Sora'] leading-6">Coaching Tips</div>
-                </div>
-                </div>
-            </div>
-            <div className="w-96 pt-4 left-0 top-[769px] absolute border-t border-slate-200 inline-flex justify-end items-start">
-                <div className="px-9 py-3 left-[126.50px] top-[17px] absolute bg-sky-500 rounded-2xl shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex justify-center items-center gap-2.5">
-                <div className="text-center justify-center text-white text-lg font-semibold font-['Sora'] leading-6">Exit</div>
-                </div>
-            </div>
-            </div>
+<div style={{width: 440, height: 956, padding: 20, background: 'linear-gradient(0deg, #F8FAFC 0%, #F8FAFC 100%), white', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'inline-flex'}}>
+  <div style={{alignSelf: 'stretch', flex: '1 1 0', paddingLeft: 21, paddingRight: 21, justifyContent: 'center', alignItems: 'center', display: 'inline-flex'}}>
+    <div style={{flex: '1 1 0', height: 903, paddingTop: 75, position: 'relative', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', display: 'inline-flex'}}>
+      <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 8, display: 'flex'}}>
+        <div style={{alignSelf: 'stretch', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+          <div style={{alignSelf: 'stretch', textAlign: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: '#0F172A', fontSize: 36, fontFamily: 'Poppins', fontWeight: '700', lineHeight: 40, wordWrap: 'break-word'}}>Analysis Results</div>
         </div>
+        <div style={{alignSelf: 'stretch', height: 66, paddingTop: 21, paddingBottom: 21}} />
+      </div>
+      <div style={{alignSelf: 'stretch', height: 555, paddingBottom: 20, overflow: 'hidden', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 32, display: 'flex'}}>
+        <div style={{alignSelf: 'stretch', height: 149, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 8, display: 'flex'}}>
+          <div style={{alignSelf: 'stretch', flex: '1 1 0', paddingLeft: 13, paddingRight: 13, paddingTop: 9, paddingBottom: 9, background: '#F8FAFC', overflow: 'hidden', borderRadius: 8, outline: '1px #CBD5E1 solid', outlineOffset: '-1px', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+            <div style={{alignSelf: 'stretch', overflow: 'hidden', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+              <div style={{justifyContent: 'center', display: 'flex', flexDirection: 'column', color: 'black', fontSize: 18, fontFamily: 'Sora', fontWeight: '600', lineHeight: 24, wordWrap: 'break-word'}}>Summary</div>
+            </div>
+          </div>
         </div>
+        <div style={{alignSelf: 'stretch', height: 131, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 8, display: 'flex'}}>
+          <div style={{alignSelf: 'stretch', flex: '1 1 0', paddingLeft: 13, paddingRight: 13, paddingTop: 9, paddingBottom: 9, background: '#F8FAFC', overflow: 'hidden', borderRadius: 8, outline: '1px #CBD5E1 solid', outlineOffset: '-1px', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+            <div style={{width: 238, height: 33, justifyContent: 'center', display: 'flex', flexDirection: 'column', color: 'black', fontSize: 18, fontFamily: 'Sora', fontWeight: '600', lineHeight: 24, wordWrap: 'break-word'}}>Follow Up</div>
+          </div>
+        </div>
+        <div style={{alignSelf: 'stretch', height: 131, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 8, display: 'flex'}}>
+          <div style={{alignSelf: 'stretch', flex: '1 1 0', paddingLeft: 13, paddingRight: 13, paddingTop: 9, paddingBottom: 9, background: '#F8FAFC', overflow: 'hidden', borderRadius: 8, outline: '1px #CBD5E1 solid', outlineOffset: '-1px', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', display: 'flex'}}>
+            <div style={{width: 238, height: 33, justifyContent: 'center', display: 'flex', flexDirection: 'column', color: 'black', fontSize: 18, fontFamily: 'Sora', fontWeight: '600', lineHeight: 24, wordWrap: 'break-word'}}>Coaching Tips</div>
+          </div>
+        </div>
+      </div>
+      <div style={{width: 358, paddingTop: 17, left: 0, top: 769, position: 'absolute', borderTop: '1px #E2E8F0 solid', justifyContent: 'flex-end', alignItems: 'flex-start', display: 'inline-flex'}}>
+        <div style={{paddingLeft: 35, paddingRight: 35, paddingTop: 13, paddingBottom: 13, left: 126.50, top: 17, position: 'absolute', background: '#1287FF', boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)', borderRadius: 16, justifyContent: 'center', alignItems: 'center', gap: 10, display: 'flex'}}>
+          <div style={{textAlign: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', color: 'white', fontSize: 18, fontFamily: 'Sora', fontWeight: '600', lineHeight: 24, wordWrap: 'break-word'}}>Exit</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
     );
 }
 
