@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import mascotUrl from "../assets/mascot.svg";
 
 function MainPage() {
+  const navigate = useNavigate();
+
   return (
     <div
       data-layer="MAIN"
@@ -68,8 +71,14 @@ function MainPage() {
 
           <div className="w-full flex justify-center">
             <button
+              type="button"
               data-layer="Button"
-              className="Button px-8 py-3 bg-[#1287FF] rounded-2xl shadow-md text-white text-[18px] font-['Sora'] font-semibold"
+              className="Button cursor-pointer px-8 py-3 bg-[#1287FF] rounded-2xl shadow-xl text-white text-[18px] font-['Sora'] font-semibold transition-colors transition-shadow duration-300 ease-in-out hover:shadow-none hover:bg-[#0f6fd6] focus:outline-none focus:ring-2 focus:ring-[#1287FF]/30"
+              style={{
+                transition:
+                  "background-color 300ms ease, box-shadow 300ms ease",
+              }}
+              onClick={() => navigate("/profile")}
             >
               Start Recording
             </button>
