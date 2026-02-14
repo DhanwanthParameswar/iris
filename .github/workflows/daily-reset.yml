@@ -2,9 +2,9 @@ name: Daily Sandbox Reset
 
 on:
   schedule:
-    # Runs at 08:00 UTC every day (Adjust to your timezone)
+    # Runs at 08:00 UTC every day
     - cron: "0 8 * * *"
-  workflow_dispatch: # Allows you to run it manually from GitHub UI
+  workflow_dispatch: # Allows manual trigger
 
 jobs:
   reset:
@@ -19,10 +19,16 @@ jobs:
           node-version: "18"
 
       - name: Install Dependencies
-        run: npm install firebase-admin
+        run: npm install firebase-admin auth0
 
       - name: Run Reset Script
         env:
+          # Firebase Secrets
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          FIREBASE_STORAGE_BUCKET: "iris-app.firebasestorage.app" # Replace with yours
+          FIREBASE_STORAGE_BUCKET: "iris-hackathon.firebasestorage.app" # Check this matches your actual bucket name!
+
+          # Auth0 Secrets (Add these to GitHub Secrets)
+          AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
+          AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
+          AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
         run: node scripts/reset-demo.js
