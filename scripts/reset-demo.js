@@ -3,7 +3,7 @@ const { ManagementClient } = require("auth0");
 const path = require("path");
 
 // --- CONFIGURATION ---
-const GOLDEN_USER_ID = "auth0|6990dce26645b4eb578475c2"; // The one user allowed to live
+const GOLDEN_USER_ID = "auth0|6990dce26645b4eb578475c2";
 
 // 1. Initialize Firebase
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -44,20 +44,18 @@ async function main() {
 
 async function cleanAuth0Users() {
   try {
-    // Get first 100 users (Should be enough for daily cleanup)
-    // Note: auth0 node sdk v3/v4 returns the array directly or in a 'data' property depending on version
-    // We assume standard behavior here.
-    const users = await auth0.users.getAll({ per_page: 100 });
+    // UPDATED FOR AUTH0 SDK v5: uses .list() instead of .getAll()
+    const response = await auth0.users.list({ per_page: 100 });
 
-    // Handle SDK v4 response structure (if it returns { data: [] })
-    const userList = Array.isArray(users) ? users : users.data;
+    // v5 returns the data inside a 'data' property
+    const userList = response.data;
 
     if (!userList || userList.length === 0) {
       console.log("No users found in Auth0.");
       return;
     }
 
-    console.log(`Found ${userList.length} users. checking whitelist...`);
+    console.log(`Found ${userList.length} users. Checking whitelist...`);
 
     for (const user of userList) {
       if (user.user_id === GOLDEN_USER_ID) {
@@ -70,12 +68,11 @@ async function cleanAuth0Users() {
       );
       await auth0.users.delete({ id: user.user_id });
 
-      // Tiny throttle to be nice to API limits
+      // Tiny throttle
       await new Promise((r) => setTimeout(r, 200));
     }
   } catch (e) {
     console.error("⚠️ Auth0 Cleanup Error:", e.message);
-    // We don't throw here because we want Firebase reset to happen even if Auth0 fails
   }
 }
 
@@ -88,18 +85,21 @@ async function nukeAndPaveFirebase() {
   // 2. Delete Storage Files
   console.log("🔥 Deleting Storage Files...");
   const [files] = await bucket.getFiles();
-  let deletedCount = 0;
   for (const file of files) {
-    // Optional: You could ALSO skip the golden resume here if you didn't want to re-upload it
-    // But re-uploading ensures it's never corrupted, so we delete everything.
     await file.delete();
-    deletedCount++;
   }
-  console.log(`Deleted ${deletedCount} files.`);
 
   // 3. Restore Golden Resume
   console.log("⬆️ Uploading Golden Resume...");
   const resumePath = path.join(__dirname, "seed-data/demo-resume.pdf");
+
+  // Verify file exists before trying to upload (Debugging step)
+  if (!require("fs").existsSync(resumePath)) {
+    throw new Error(
+      `CRITICAL: Resume file not found at ${resumePath}. Did you commit it?`,
+    );
+  }
+
   const destination = `resumes/${GOLDEN_USER_ID}.pdf`;
 
   await bucket.upload(resumePath, {
@@ -115,26 +115,22 @@ async function nukeAndPaveFirebase() {
 
   // 4. Restore Database Snapshot
   console.log("🌱 Reseeding Firestore...");
-  // Make sure this file exists!
   const snapshot = require("./seed-data/db-snapshot.json");
 
   // Restore User
   const userData = { ...snapshot.user.data, resumeUrl: url };
   await db.collection("users").doc(snapshot.user.id).set(userData);
-  console.log("Restored Golden User.");
 
   // Restore Sessions
   for (const session of snapshot.sessions) {
     const sessionData = {
       ...session.data,
-      createdAt: admin.firestore.Timestamp.now(), // Make it look like it happened today
+      createdAt: admin.firestore.Timestamp.now(),
     };
     await db.collection("sessions").doc(session.id).set(sessionData);
   }
-  console.log(`Restored ${snapshot.sessions.length} Golden Sessions.`);
 }
 
-// Helper to delete collections (Recursive batches)
 async function deleteCollection(db, collectionPath, batchSize) {
   const collectionRef = db.collection(collectionPath);
   const query = collectionRef.orderBy("__name__").limit(batchSize);
