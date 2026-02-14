@@ -1,88 +1,70 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 import mascotUrl from "../assets/mascot.svg";
 
 function MainPage() {
+  const { loginWithRedirect, isAuthenticated } = useAuth0();
   const navigate = useNavigate();
 
+  const handleStart = () => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    } else {
+      loginWithRedirect({
+        appState: { targetUrl: "/dashboard" },
+      });
+    }
+  };
+
   return (
-    <div
-      data-layer="MAIN"
-      className="Main min-h-screen w-full bg-gray-50 flex flex-col items-center relative"
-    >
-      <header
-        data-layer="Header"
-        className="Header fixed top-0 left-0 w-full h-[55px] flex items-center justify-center z-30"
-      >
-        <nav
-          data-layer="Nav"
-          className="Nav w-full flex items-center justify-center max-w-[1536px]"
-        >
-          <div
-            data-layer="Container"
-            className="Container flex items-center gap-2"
+    <div className="min-h-screen w-full bg-[#f9fafb] flex flex-col font-['Sora'] relative overflow-hidden">
+      {/* Decorative background blob (Subtle polish) */}
+      <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-30 pointer-events-none" />
+
+      {/* --- Navbar --- */}
+      <nav className="w-full flex justify-center py-8 z-10">
+        <span className="text-2xl font-bold text-slate-900 tracking-tight">
+          Iris
+        </span>
+      </nav>
+
+      {/* --- Hero Section --- */}
+      <main className="flex-1 flex flex-col items-center justify-center px-6 -mt-10">
+        <div className="flex flex-col items-center max-w-xl text-center gap-8">
+          {/* Mascot Image */}
+          <div className="relative group">
+            {/* Glow effect behind mascot */}
+            <div className="absolute inset-0 bg-blue-400 blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 rounded-full"></div>
+            <img
+              src={mascotUrl}
+              alt="Iris Mascot"
+              className="relative w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-xl transform transition-transform duration-500 hover:scale-105"
+            />
+          </div>
+
+          {/* Typography */}
+          <div className="space-y-1">
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight">
+              Meet Your New <span className="text-[#1287FF]">AI</span>
+            </h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-[#1287FF] leading-tight">
+              Career Fair Coach
+            </h1>
+          </div>
+
+          {/* Subtext */}
+          <p className="text-slate-500 font-['Poppins'] text-sm md:text-base max-w-xs md:max-w-md leading-relaxed">
+            Turn recruiter chats into job offers. Record, analyze, and get your
+            follow-ups written for you.
+          </p>
+
+          {/* Call to Action */}
+          <button
+            onClick={handleStart}
+            className="px-8 py-4 bg-[#1287FF] hover:bg-[#0f6fd6] text-white text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-200"
           >
-            {/* Iris positioned 55px from top and centered horizontally */}
-            <div
-              data-layer="Iris"
-              className="Iris fixed left-1/2 top-[55px] transform -translate-x-1/2 font-['Sora'] font-bold text-[48px] leading-none text-gray-800"
-            >
-              Iris
-            </div>
-          </div>
-        </nav>
-      </header>
-
-      <main
-        data-layer="Container"
-        className="Container absolute inset-0 flex items-center justify-center"
-      >
-        {/* fixed-size, non-scaling content container */}
-        <div className="w-[440px] px-10 py-8 flex flex-col items-center gap-5">
-          <img
-            data-layer="image 1"
-            className="Image1 w-[212px] h-[196px] rounded-[106px] object-cover"
-            src={mascotUrl}
-            alt="hero"
-          />
-
-          <div
-            data-layer="Heading 1"
-            className="Heading1 w-full flex flex-col items-stretch"
-          >
-            <div className="w-full text-center">
-              <div className="w-full text-gray-800 font-['Sora'] font-bold text-[39px] leading-[45px]">
-                Meet Your New <span className="text-[#1287FF]">AI</span>
-              </div>
-              <div className="w-full text-[#1287FF] font-['Sora'] font-bold text-[39px] leading-[45px]">
-                Career Fair Coach
-              </div>
-            </div>
-          </div>
-
-          <div data-layer="Container" className="Container w-full text-center">
-            <div
-              data-layer="Turn recruiter chats into job offers. Record, analyze, and get your follow-ups written for you."
-              className="text-gray-500 text-[12px] font-['Poppins'] font-normal pb-[10px]"
-            >
-              Turn recruiter chats into job offers. Record, analyze, and get
-              your follow-ups written for you.
-            </div>
-          </div>
-
-          <div className="w-full flex justify-center">
-            <button
-              type="button"
-              data-layer="Button"
-              className="Button cursor-pointer px-8 py-3 bg-[#1287FF] rounded-2xl shadow-xl text-white text-[18px] font-['Sora'] font-semibold transition-colors transition-shadow duration-300 ease-in-out hover:shadow-none hover:bg-[#0f6fd6] focus:outline-none focus:ring-2 focus:ring-[#1287FF]/30"
-              style={{
-                transition:
-                  "background-color 300ms ease, box-shadow 300ms ease",
-              }}
-              onClick={() => navigate("/profile")}
-            >
-              Start Recording
-            </button>
-          </div>
+            Start Recording
+          </button>
         </div>
       </main>
     </div>

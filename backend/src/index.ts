@@ -1,202 +1,129 @@
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
 export interface Env {
-	ELEVENLABS_API_KEY: string;
 	GEMINI_API_KEY: string;
-  }
-  
-  /**
-   * Main fetch handler for the Cloudflare Worker.
-   * This is the single endpoint your frontend will call.
-   */
-  export default {
+}
+
+interface RequestBody {
+	audioUrl: string;
+	resumeUrl?: string; // We now take the URL, not the text
+}
+
+export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-  
-	  // CORS headers
-	  const corsHeaders = {
-		"Access-Control-Allow-Origin": "*", // Lock to your domain in production
-		"Access-Control-Allow-Methods": "POST, OPTIONS",
-		"Access-Control-Allow-Headers": "Content-Type",
-	  };
-  
-	  // Handle OPTIONS (CORS preflight)
-	  if (request.method === "OPTIONS") {
-		return new Response(null, { headers: corsHeaders });
-	  }
-  
-	  // Only accept POST
-	  if (request.method !== "POST") {
-		return new Response(JSON.stringify({ error: "Method Not Allowed" }), { 
-		  status: 405, 
-		  headers: { ...corsHeaders, "Content-Type": "application/json" } 
-		});
-	  }
-  
-	  try {
-		// 1. Get the audio file from the frontend
-		const formData = await request.formData();
-		const audioFile = formData.get("audio"); // Must match frontend key
-  
-		if (!audioFile || !(audioFile instanceof Blob)) {
-		  return new Response(JSON.stringify({ error: "No audio file found" }), { 
-			status: 400, 
-			headers: { ...corsHeaders, "Content-Type": "application/json" } 
-		  });
-		}
-  
-		// 2. Transcribe audio with ElevenLabs (speaker diarization)
-		const transcriptData = await getTranscript(audioFile, env);
-  
-		// 3. Process the diarized transcript into speaker turns
-		let formattedTranscript = "";
-  
-		if (transcriptData.words && Array.isArray(transcriptData.words)) {
-		  let lastSpeaker: string | null = null;
-		  let currentBuffer: string[] = [];
-  
-		  // Optional mapping to nicer speaker labels
-		  const labelMap: Record<string, string> = {
-			speaker_0: "Speaker A",
-			speaker_1: "Speaker B"
-		  };
-  
-		  for (const token of transcriptData.words) {
-			const speaker = token.speaker_id;
-			const text = token.text;
-  
-			if (speaker !== lastSpeaker) {
-			  if (currentBuffer.length > 0) {
-				formattedTranscript += `${labelMap[lastSpeaker!] || lastSpeaker}:\n${currentBuffer.join("")}\n\n`;
-			  }
-			  currentBuffer = [];
-			  lastSpeaker = speaker;
-			}
-  
-			currentBuffer.push(text);
-		  }
-  
-		  // Flush final block
-		  if (currentBuffer.length > 0) {
-			formattedTranscript += `${labelMap[lastSpeaker!] || lastSpeaker}:\n${currentBuffer.join("")}\n\n`;
-		  }
-  
-		} else if (transcriptData.text) {
-		  // Fallback if diarization failed
-		  formattedTranscript = transcriptData.text;
-		} else {
-		  throw new Error("Could not parse transcript data: missing words[]");
-		}
-  
-		// 4. Send formatted transcript to Gemini for analysis
-		const analysis = await getAnalysis(formattedTranscript, env);
-  
-		// 5. Return final JSON
-		const finalResponse = {
-		  transcript: formattedTranscript,
-		  analysis: analysis,
-		  rawTranscriptData: transcriptData
+		const corsHeaders = {
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Methods': 'POST, OPTIONS',
+			'Access-Control-Allow-Headers': 'Content-Type',
 		};
-  
-		return new Response(JSON.stringify(finalResponse), {
-		  headers: {
-			...corsHeaders,
-			"Content-Type": "application/json",
-		  },
-		});
-  
-	  } catch (error) {
-		console.error("Error in main handler:", error);
-		const errorMessage = (error instanceof Error) ? error.message : "Unknown error";
-		return new Response(JSON.stringify({ error: errorMessage }), {
-		  status: 500,
-		  headers: {
-			...corsHeaders,
-			"Content-Type": "application/json",
-		  },
-		});
-	  }
+
+		if (request.method === 'OPTIONS') {
+			return new Response(null, { headers: corsHeaders });
+		}
+
+		if (request.method !== 'POST') {
+			return new Response('Method Not Allowed', { status: 405, headers: corsHeaders });
+		}
+
+		try {
+			const { audioUrl, resumeUrl } = (await request.json()) as RequestBody;
+
+			if (!audioUrl) {
+				return new Response('Missing audioUrl', { status: 400, headers: corsHeaders });
+			}
+
+			// 1. Fetch the Audio File
+			console.log('Fetching audio...', audioUrl);
+			const audioRes = await fetch(audioUrl);
+			const audioBuffer = await audioRes.arrayBuffer();
+			const audioBase64 = arrayBufferToBase64(audioBuffer);
+
+			// 2. Fetch the Resume PDF (if provided)
+			let resumeBase64 = null;
+			if (resumeUrl) {
+				console.log('Fetching resume...', resumeUrl);
+				const resumeRes = await fetch(resumeUrl);
+				const resumeBuffer = await resumeRes.arrayBuffer();
+				resumeBase64 = arrayBufferToBase64(resumeBuffer);
+			}
+
+			// 3. Initialize Gemini
+			const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
+			const model = genAI.getGenerativeModel({
+				model: 'gemini-flash-latest',
+				generationConfig: { responseMimeType: 'application/json' },
+			});
+
+			// 4. Construct the Prompt with Sentiment Logic
+			const systemPrompt = `
+        You are an expert career coach analyzing an interview/recruiter session.
+        
+        Task:
+        1. Listen to the audio and read the attached resume.
+        2. Transcribe the conversation (Speaker labels are ONLY: 'Interviewer' and 'Candidate').
+        3. Analyze the candidate's performance.
+        4. Determine the overall sentiment from this list ONLY: ["Confident", "Hesitant", "Enthusiastic", "Anxious", "Neutral"].
+        
+        Output JSON Schema (Strict):
+        {
+          "title": "A very short, a couple words max, specific title for the session.",
+          "transcript": [
+            { "role": "Interviewer", "text": "..." },
+            { "role": "Candidate", "text": "..." }
+          ],
+          "analysis": {
+            "sentiment": "One of the allowed words",
+            "summary": "2-3 sentence overview of performance.",
+            "coachingTips": ["Specific tip 1", "Specific tip 2", "Specific tip 3"],
+            "followUp": "Actionable advice on what to do next + a draft message if applicable."
+          }
+        }
+      `;
+
+			// 5. Build the "Parts" Array
+			const parts: any[] = [
+				{ text: systemPrompt },
+				{
+					inlineData: {
+						mimeType: 'audio/mp3', // Gemini is flexible with audio mime types
+						data: audioBase64,
+					},
+				},
+			];
+
+			// Add Resume Part if it exists
+			if (resumeBase64) {
+				parts.push({
+					inlineData: {
+						mimeType: 'application/pdf',
+						data: resumeBase64,
+					},
+				});
+			}
+
+			// 6. Execute
+			const result = await model.generateContent(parts);
+			const responseText = result.response.text();
+
+			return new Response(responseText, {
+				headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+			});
+		} catch (error: any) {
+			console.error('Error:', error);
+			return new Response(JSON.stringify({ error: error.message }), {
+				status: 500,
+				headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+			});
+		}
 	},
-  };
-  
-  /**
-   * Transcribes audio using the ElevenLabs Speech-to-Text API.
-   * This version is configured for speaker diarization.
-   */
-  async function getTranscript(audioBlob: Blob, env: Env): Promise<any> {
-	console.log("Sending audio to ElevenLabs for diarization...");
-	const apiKey = env.ELEVENLABS_API_KEY;
-  
-	const formData = new FormData();
-	formData.append("file", audioBlob, "audio.wav");
-	formData.append("model_id", "scribe_v1"); // STT model
-	formData.append("diarize", "true");
-	formData.append("num_speakers", "2");
-  
-	const response = await fetch("https://api.elevenlabs.io/v1/speech-to-text", {
-	  method: "POST",
-	  headers: {
-		"Xi-Api-Key": apiKey,
-	  },
-	  body: formData,
-	});
-  
-	if (!response.ok) {
-	  const errorText = await response.text();
-	  console.error("ElevenLabs API Error:", errorText);
-	  throw new Error(`Failed to transcribe audio: ${errorText}`);
+};
+
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+	let binary = '';
+	const bytes = new Uint8Array(buffer);
+	const len = bytes.byteLength;
+	for (let i = 0; i < len; i++) {
+		binary += String.fromCharCode(bytes[i]);
 	}
-  
-	const transcriptData: any = await response.json();
-	if (!transcriptData) {
-	  throw new Error("Invalid response format from ElevenLabs");
-	}
-  
-	console.log("Got diarized transcript data.");
-	return transcriptData;
-  }
-  
-  /**
-   * Analyzes a transcript using the Google Gemini API.
-   */
-  async function getAnalysis(transcript: string, env: Env): Promise<any> {
-	console.log("Sending transcript to Gemini...");
-	const apiKey = env.GEMINI_API_KEY;
-  
-	const systemPrompt = `You are a world-class career coach. A student just had a conversation with a recruiter. Here is the transcript: "${transcript}".
-  Analyze this transcript and return ONLY a valid JSON object (no other text, no markdown wrappers like \`\`\`json) with the following keys: "summary", "sentiment", "email_draft", "coaching_tip".
-  - summary: A brief 2-sentence summary of the conversation.
-  - sentiment: One word: "Positive", "Neutral", or "Negative".
-  - email_draft: A professional follow-up email draft based on the conversation.
-  - coaching_tip: One actionable tip for the student for next time.`;
-  
-	const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`;
-  
-	const body = {
-	  contents: [{ parts: [{ text: systemPrompt }] }],
-	  safetySettings: [
-		{ category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-		{ category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-		{ category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-		{ category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-	  ],
-	  generationConfig: {
-		responseMimeType: "application/json",
-	  }
-	};
-  
-	const response = await fetch(apiUrl, {
-	  method: "POST",
-	  headers: { "Content-Type": "application/json" },
-	  body: JSON.stringify(body),
-	});
-  
-	if (!response.ok) {
-	  const errorText = await response.text();
-	  console.error("Gemini API Error:", errorText);
-	  throw new Error(`Failed to get analysis: ${errorText}`);
-	}
-  
-	const data: any = await response.json();
-	const jsonResponseText = data.candidates[0].content.parts[0].text;
-  
-	console.log("Got analysis.");
-	return JSON.parse(jsonResponseText);
-  }  
+	return btoa(binary);
+}

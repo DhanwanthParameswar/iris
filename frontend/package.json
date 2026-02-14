@@ -11,10 +11,12 @@
     "tailwind-init": "tailwindcss init -p"
   },
   "dependencies": {
+    "@auth0/auth0-react": "^2.13.0",
     "@tailwindcss/vite": "^4.1.17",
+    "firebase": "^12.9.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router-dom": "^7.9.5"
+    "react-router-dom": "^7.13.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

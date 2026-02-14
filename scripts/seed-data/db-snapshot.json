@@ -1,0 +1,106 @@
+{
+  "user": {
+    "id": "auth0|6990dce26645b4eb578475c2",
+    "data": {
+      "fullName": "Demo",
+      "email": "demo@demo.com",
+      "onboarded": true,
+      "resumeUrl": "WILL_BE_REPLACED_BY_SCRIPT"
+    }
+  },
+  "sessions": [
+    {
+      "id": "RS08v4Q6es2B47M5GiKM",
+      "data": {
+        "userId": "auth0|6990dce26645b4eb578475c2",
+        "title": "Iris Architecture Deep-Dive",
+        "createdAt": "TIMESTAMP_PLACEHOLDER",
+        "analysis": {
+          "sentiment": "Confident",
+          "summary": "The candidate provided a clear and technically sound explanation of their project's architecture, demonstrating a strong grasp of modern serverless technologies and AI integration. They successfully justified their tool choices (Vite, Cloudflare Workers, Gemini) based on performance requirements like low latency and small bundle sizes.",
+          "coachingTips": [
+            "Ensure the 'Iris' project is prominently featured on your resume, as it showcases more modern stack experience (Cloudflare Workers, Gemini AI) than the listed 'Gitlytics' project.",
+            "When discussing latency, try to provide specific metrics (e.g., 'reduced response time by 40%') to provide a more data-driven impact statement.",
+            "Be prepared to discuss the cost-scaling implications of using Firebase vs. a traditional SQL database as the project grows beyond the free tier."
+          ],
+          "followUp": "Send a follow-up email thanking the interviewer for the deep dive into Iris. Include a link to the GitHub repository or a live demo site to further prove the project's functionality. Draft: 'Hi [Interviewer Name], I enjoyed our discussion about the Iris architecture today. As promised, here is the link to the repository [Link] where you can see the Cloudflare Workers implementation we discussed. Best, Jake.'"
+        },
+        "transcript": [
+          {
+            "role": "Interviewer",
+            "text": "So, I've looked at the Iris project. Can you walk me through the architecture? Specifically, how are you handling the real-time constraints?"
+          },
+          {
+            "role": "Candidate",
+            "text": "Absolutely. We designed Iris to be lightweight and serverless. For the front-end, we used React with Vite because we needed a fast, responsive PWA feel. We styled it with Tailwind CSS to keep the bundle size small."
+          },
+          {
+            "role": "Interviewer",
+            "text": "And what about the back-end? Are you running a Node server?"
+          },
+          {
+            "role": "Candidate",
+            "text": "No, we actually went fully serverless with Cloudflare Workers. It gives us incredibly low latency because the code runs on the edge, closer to the user. For the database, we needed something flexible and free-tier friendly, so we chose Firebase Firestore for storing session metadata and Firebase Storage for the resume PDFs."
+          },
+          {
+            "role": "Interviewer",
+            "text": "Makes sense. How are you handling the AI analysis? Is that custom?"
+          },
+          {
+            "role": "Candidate",
+            "text": "We're leveraging Google's Gemini Flash model. Because of its multi-modal capabilities, we're able to stream the audio file and resume directly to Gemini. It handles the transcription, speaker identification, personalization, and the coaching analysis in a single request."
+          },
+          {
+            "role": "Interviewer",
+            "text": "That's a very efficient architecture. Nice work."
+          }
+        ]
+      }
+    },
+    {
+      "id": "ggfNXFPeKklwxnPHX8Vb",
+      "data": {
+        "userId": "auth0|6990dce26645b4eb578475c2",
+        "title": "Technical Roadblock Discussion",
+        "createdAt": "TIMESTAMP_PLACEHOLDER",
+        "analysis": {
+          "sentiment": "Hesitant",
+          "summary": "Jake successfully communicated a complex technical challenge and its resolution, showcasing his ability to lead under pressure. While his technical explanation of database denormalization was sound, his delivery was weakened by excessive filler words and self-doubting phrases like 'I think' and 'I guess'.",
+          "coachingTips": [
+            "Minimize the use of filler words such as 'um', 'uh', and 'basically' to project more confidence.",
+            "Avoid using tentative language like 'I guess' or 'I think' when describing technical solutions you successfully implemented; it undermines your expertise.",
+            "When discussing 'all-nighters', frame them as a strategic one-time push for excellence rather than a symptom of poor planning to show maturity."
+          ],
+          "followUp": "Send a follow-up email that reinforces the technical metrics mentioned. Draft: 'Hi [Interviewer Name], I enjoyed our conversation about the customer dashboard project. I wanted to reiterate that optimizing the database from 2s to 200ms response times was a highlight of my work on Gitlytics, and I look forward to bringing that same focus on performance to your team.'"
+        },
+        "transcript": [
+          {
+            "role": "Interviewer",
+            "text": "Tell me about a time you faced a significant technical roadblock close to a deadline. How did you handle it?"
+          },
+          {
+            "role": "Candidate",
+            "text": "Um, yeah, so in a previous project, we were building a customer dashboard and, uh, basically we realized like three days before launch that our database schema wasn't really scaling well. The queries were taking too long to load, I guess."
+          },
+          {
+            "role": "Interviewer",
+            "text": "That's stressful. Did you push back the deadline?"
+          },
+          {
+            "role": "Candidate",
+            "text": "I mean, we thought about it, but I didn't really want to do that. So I gathered the team for a quick meeting, realized we didn't need to rewrite the whole backend. We just needed to de-normalize the data for the most frequent views, I think. So essentially creating read-optimized views."
+          },
+          { "role": "Interviewer", "text": "Yeah, exactly." },
+          {
+            "role": "Candidate",
+            "text": "So I took lead on rewriting the ingestion pipeline while my teammate updated the frontend API calls. We pulled an all-nighter to migrate the data. It was pretty rough, honestly, but we managed to reduce the query time from 2 seconds to under 200 milliseconds. We launched on time, so, yeah, it worked out."
+          },
+          {
+            "role": "Interviewer",
+            "text": "Great example of prioritizing the critical path. Thank you."
+          }
+        ]
+      }
+    }
+  ]
+}

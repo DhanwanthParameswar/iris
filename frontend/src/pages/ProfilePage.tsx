@@ -1,579 +1,419 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
+import { db, storage } from "../lib/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-interface IFormData {
-  fullName: string;
-  email: string;
-  phone: string;
-}
-
-const UploadIcon: React.FC = () => (
-  <svg
-    className="w-12 h-12 text-gray-400 mb-3"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth="1.5"
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
-    />
-  </svg>
-);
-
-function ProfileForm() {
+export default function ProfilePage() {
+  const { user } = useAuth0();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<IFormData>({
-    fullName: "",
-    email: "",
-    phone: "",
-  });
-  const [phoneRaw, setPhoneRaw] = useState<string>(""); // digits only
-  const [file, setFile] = useState<File | null>(null);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const location = useLocation();
 
-  const [nameError, setNameError] = useState<boolean>(false);
-  const [emailError, setEmailError] = useState<boolean>(false);
-  const [phoneError, setPhoneError] = useState<boolean>(false);
-  const [fileError, setFileError] = useState<string | null>(null);
+  // --- Determine Mode ---
+  // If state.mode is 'edit', we are editing. Otherwise, we are onboarding.
+  const [isEditMode, setIsEditMode] = useState(location.state?.mode === "edit");
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    if (id === "email") {
-      setFormData((prev) => ({ ...prev, email: value }));
-      if (emailError) setEmailError(false);
-      return;
+  // --- State ---
+  const [loading, setLoading] = useState(true);
+  const [fullName, setFullName] = useState("");
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [existingResumeUrl, setExistingResumeUrl] = useState<string | null>(
+    null,
+  );
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Track initial state to disable "Save" if no changes were made
+  const [initialFullName, setInitialFullName] = useState("");
+
+  // --- Initialization ---
+  useEffect(() => {
+    // Inject Fonts
+    const fontId = "sora-poppins-fonts";
+    if (!document.getElementById(fontId)) {
+      const link = document.createElement("link");
+      link.id = fontId;
+      link.rel = "stylesheet";
+      link.href =
+        "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&family=Sora:wght@600;700&display=swap";
+      document.head.appendChild(link);
     }
-    if (id === "fullName") {
-      setFormData((prev) => ({ ...prev, fullName: value }));
-      if (nameError) setNameError(false);
-      return;
+
+    // Fetch user data from Firebase
+    const fetchUserData = async () => {
+      if (!user?.sub) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const userDocRef = doc(db, "users", user.sub);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          // Document exists - treat as Edit Mode
+          const userData = userDoc.data();
+          setIsEditMode(true);
+          setFullName(userData.fullName || "");
+          setInitialFullName(userData.fullName || "");
+          setExistingResumeUrl(userData.resumeUrl || null);
+        } else {
+          // Document does NOT exist - treat as Onboarding Mode
+          setIsEditMode(false);
+          // Leave name blank for onboarding
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        // On error, default to onboarding mode with blank name
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [user]);
+
+  // --- Handlers ---
+  const capitalizeWords = (str: string) => {
+    return str
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      validateAndSetFile(e.dataTransfer.files[0]);
     }
-  };
-
-  const emailIsValid = (email: string) => {
-    // simple industry-common validation
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email.trim());
-  };
-
-  const handleEmailBlur = () => {
-    if (formData.email.trim() === "") {
-      setEmailError(false);
-      return;
-    }
-    setEmailError(!emailIsValid(formData.email));
-  };
-
-  const handleNameBlur = () => {
-    if (formData.fullName.trim() === "") setNameError(true);
-    else setNameError(false);
-  };
-
-  const formatPhoneDisplay = (digits: string) => {
-    // format for nice display while typing (supports US / NANP styling)
-    const d = digits.replace(/\D/g, "");
-    if (d.length === 0) return "";
-    // if starts with 1 and long enough, show +1 ...
-    if (d.length > 10 && d[0] === "1") {
-      const core = d.slice(1);
-      if (core.length <= 3) return `+1 (${core}`;
-      if (core.length <= 6) return `+1 (${core.slice(0, 3)}) ${core.slice(3)}`;
-      return `+1 (${core.slice(0, 3)}) ${core.slice(3, 6)}-${core.slice(
-        6,
-        10
-      )}`;
-    }
-    if (d.length <= 3) return d;
-    if (d.length <= 6) return `(${d.slice(0, 3)}) ${d.slice(3)}`;
-    return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6, 10)}`;
-  };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/\D/g, "");
-    setPhoneRaw(raw);
-    setFormData((prev) => ({ ...prev, phone: formatPhoneDisplay(raw) }));
-    if (phoneError) setPhoneError(false);
-  };
-
-  const handlePhoneBlur = () => {
-    // consider valid if at least 10 digits (NANP)
-    const digits = phoneRaw.replace(/\D/g, "");
-    if (digits.length < 10) setPhoneError(true);
-    else setPhoneError(false);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFileError(null);
     if (e.target.files && e.target.files[0]) {
-      const f = e.target.files[0];
-      const name = f.name.toLowerCase();
-      const mime = f.type;
-      const okMime =
-        mime === "application/pdf" ||
-        mime === "application/msword" ||
-        mime ===
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-      const okExt =
-        name.endsWith(".pdf") ||
-        name.endsWith(".doc") ||
-        name.endsWith(".docx");
-
-      if (!okMime && !okExt) {
-        setFileError("Unsupported file type. Please upload PDF/DOC/DOCX.");
-        setFile(null);
-        return;
-      }
-      setFile(f);
+      validateAndSetFile(e.target.files[0]);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // validate
-    let ok = true;
-    if (formData.fullName.trim() === "") {
-      setNameError(true);
-      ok = false;
+  const validateAndSetFile = (file: File) => {
+    if (file.type === "application/pdf") {
+      setResumeFile(file);
+    } else {
+      alert("Please upload a PDF file.");
     }
-    if (!emailIsValid(formData.email)) {
-      setEmailError(true);
-      ok = false;
-    }
-    if (phoneRaw.replace(/\D/g, "").length < 10) {
-      setPhoneError(true);
-      ok = false;
-    }
-    if (file === null) {
-      setFileError("Please upload a resume (PDF/DOC/DOCX).");
-      ok = false;
-    }
-    if (!ok) return;
-
-    const completeFormData = { ...formData, resume: file };
-    console.log("Form Data Submitted:", completeFormData);
-    // navigate to library after successful submit
-    navigate("/library");
   };
 
-  const handleDragEvent = useCallback(
-    (e: React.DragEvent<HTMLDivElement>, action: "over" | "leave" | "drop") => {
-      e.preventDefault();
-      e.stopPropagation();
+  const handleSubmit = async () => {
+    if (!fullName.trim() || !user?.sub) return;
 
-      switch (action) {
-        case "over":
-          setIsDragging(true);
-          break;
-        case "leave":
-          setIsDragging(false);
-          break;
-        case "drop":
-          setIsDragging(false);
-          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            const f = e.dataTransfer.files[0];
-            // reuse validation logic
-            const name = f.name.toLowerCase();
-            const mime = f.type;
-            const okMime =
-              mime === "application/pdf" ||
-              mime === "application/msword" ||
-              mime ===
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-            const okExt =
-              name.endsWith(".pdf") ||
-              name.endsWith(".doc") ||
-              name.endsWith(".docx");
+    try {
+      setLoading(true);
 
-            if (!okMime && !okExt) {
-              setFileError(
-                "Unsupported file type. Please upload PDF/DOC/DOCX."
-              );
-              setFile(null);
-              return;
-            }
-            setFileError(null);
-            setFile(f);
-          }
-          break;
+      let resumeUrl = existingResumeUrl; // Keep existing URL by default
+
+      // Upload new resume file if one was selected
+      if (resumeFile) {
+        const storageRef = ref(storage, `resumes/${user.sub}.pdf`);
+        await uploadBytes(storageRef, resumeFile);
+        resumeUrl = await getDownloadURL(storageRef);
       }
-    },
-    []
-  );
 
-  const dropZoneClass = `
-    relative flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg cursor-pointer transition-colors
-    ${
-      isDragging
-        ? "border-blue-500 bg-blue-50"
-        : fileError
-        ? "border-red-400 bg-white"
-        : "border-gray-300 bg-gray-50 hover:border-gray-400"
-    }
-  `;
+      // Save user data to Firestore
+      const userDocRef = doc(db, "users", user.sub);
+      await setDoc(
+        userDocRef,
+        {
+          fullName,
+          resumeUrl,
+          email: user.email,
+          onboarded: true,
+        },
+        { merge: true },
+      );
 
-  useEffect(() => {
-    const id = "sora-poppins-fonts";
-    if (!document.getElementById(id)) {
-      const link = document.createElement("link");
-      link.id = id;
-      link.rel = "stylesheet";
-      link.href =
-        "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&family=Sora:wght@700&display=swap";
-      document.head.appendChild(link);
+      // Cache onboarding status for this user to avoid redirect loop
+      localStorage.setItem(`onboarding_${user.sub}`, JSON.stringify(true));
+
+      // Navigate to dashboard
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      alert("Failed to save profile. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  };
+
+  // --- Logic for Disabling Button ---
+  const hasChanges = () => {
+    if (!isEditMode) return true; // Always allow submission in onboarding (if valid)
+
+    const nameChanged = fullName !== initialFullName;
+    const fileChanged = resumeFile !== null; // If they picked a new file, that's a change
+
+    return nameChanged || fileChanged;
+  };
+
+  const isFormValid =
+    fullName.trim().length > 0 &&
+    (isEditMode
+      ? existingResumeUrl !== null || resumeFile !== null
+      : resumeFile !== null);
+  // Note: In edit mode, must have existing resume OR new file. In onboarding, must upload a new file.
+
+  const canSubmit = isFormValid && hasChanges();
+
+  // Show loading spinner while fetching data
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-[#f9fafb]">
+        <div className="bg-white p-8 rounded-3xl shadow-lg w-full max-w-md flex flex-col h-[80vh] relative overflow-hidden transition-all duration-300">
+          <div className="flex flex-col items-center justify-center h-full">
+            <div className="w-12 h-12 border-4 border-blue-200 border-t-[#1287FF] rounded-full animate-spin mb-4"></div>
+            <p className="text-slate-600 font-['Poppins'] text-sm">
+              Loading your profile...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center p-6"
-      style={{ backgroundColor: "#f9fafb" }}
-    >
-      <div className="bg-white p-8 rounded-3xl shadow-lg w-full max-w-md flex flex-col h-[75vh]">
-        {/* header stuck to top of card */}
-        <div className="w-full flex-none">
-          <h1
-            className="text-center mb-2"
-            style={{
-              fontFamily:
-                "Sora, system-ui, -apple-system, 'Segoe UI', Roboto, Arial",
-              fontWeight: 700,
-              fontSize: "1.875rem",
-              color: "#111827",
-            }}
-          >
-            Your Profile
-          </h1>
-          <p
-            className="text-center"
-            style={{
-              fontFamily:
-                "Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial",
-              fontWeight: 400,
-              color: "#64748B",
-            }}
-          >
-            Enter your personal information and resume.
+    <div className="min-h-screen flex items-center justify-center p-6 bg-[#f9fafb]">
+      <div className="bg-white p-8 rounded-3xl shadow-lg w-full max-w-md flex flex-col h-[80vh] relative overflow-hidden transition-all duration-300">
+        {/* --- Header (Dynamic) --- */}
+        <div className="flex items-center justify-between mb-8 z-10 relative">
+          {isEditMode ? (
+            // Edit Mode Header: With Back Button
+            <>
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="p-2 -ml-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-colors"
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <div className="text-center flex-1 pr-8">
+                <h1 className="text-xl font-['Sora'] font-bold text-slate-900">
+                  Edit Profile
+                </h1>
+              </div>
+            </>
+          ) : (
+            // Onboarding Mode Header: Centered Icon
+            <div className="w-full text-center">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-[#1287FF] mb-4">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <h1 className="text-2xl font-['Sora'] font-bold text-slate-900">
+                Welcome to Iris
+              </h1>
+            </div>
+          )}
+        </div>
+
+        {/* --- Subheader --- */}
+        <div className="text-center mb-6 -mt-4">
+          <p className="text-slate-500 font-['Poppins'] text-sm px-4">
+            {isEditMode
+              ? "Update your details to refine your interview coaching sessions."
+              : "Let's get your profile set up so we can tailor your interview coaching."}
           </p>
         </div>
 
-        {/* scrollable form content */}
-        <form
-          id="profileForm"
-          onSubmit={handleSubmit}
-          className="flex-1 overflow-auto mt-4 pb-6"
-        >
-          <div className="mb-5">
-            <label
-              htmlFor="fullName"
-              className="block text-sm mb-2"
-              style={{
-                fontFamily:
-                  "Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial",
-                fontWeight: 500,
-                color: "#475569",
-              }}
-            >
+        {/* --- Form Content --- */}
+        <div className="flex-1 flex flex-col space-y-6 overflow-y-auto px-1">
+          {/* Name Input */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700 font-['Sora'] ml-1">
               Full Name
             </label>
-
-            <div className="relative">
+            <div className="flex items-center bg-white border border-slate-200 rounded-xl px-4 py-3 mt-1.5 focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-[#1287FF] transition-all shadow-sm">
               <input
                 type="text"
-                id="fullName"
-                value={formData.fullName}
-                onChange={handleInputChange}
-                onBlur={handleNameBlur}
-                placeholder="Alex Doe"
-                className="w-full px-4 py-3 outline-none"
-                style={{
-                  border: `1px solid ${nameError ? "#EF4444" : "#CBD5E1"}`,
-                  borderRadius: 8,
-                  fontFamily:
-                    "Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial",
-                  fontWeight: 400,
-                  color: "#1E293B",
-                  backgroundColor: "white",
-                }}
-                aria-invalid={nameError}
+                value={fullName}
+                onChange={(e) => setFullName(capitalizeWords(e.target.value))}
+                placeholder="e.g. Alex Johnson"
+                className="flex-1 bg-transparent outline-none text-slate-900 placeholder:text-slate-400 font-['Poppins'] text-sm"
               />
-              {nameError && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="#EF4444"
-                      strokeWidth="1.6"
-                    />
-                    <path
-                      d="M12 7v6"
-                      stroke="#EF4444"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M12 16h.01"
-                      stroke="#EF4444"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-              )}
             </div>
           </div>
 
-          <div className="mb-5">
-            <label
-              htmlFor="email"
-              className="block text-sm mb-2"
-              style={{
-                fontFamily:
-                  "Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial",
-                fontWeight: 500,
-                color: "#475569",
-              }}
-            >
-              Email Address
-            </label>
-
-            <div className="relative">
-              <input
-                type="email"
-                id="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                onBlur={handleEmailBlur}
-                placeholder="alex.doe@example.com"
-                className="w-full px-4 py-3 outline-none"
-                style={{
-                  border: `1px solid ${emailError ? "#EF4444" : "#CBD5E1"}`,
-                  borderRadius: 8,
-                  fontFamily:
-                    "Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial",
-                  fontWeight: 400,
-                  color: "#1E293B",
-                  backgroundColor: "white",
-                }}
-                aria-invalid={emailError}
-              />
-              {emailError && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="#EF4444"
-                      strokeWidth="1.6"
-                    />
-                    <path
-                      d="M12 7v6"
-                      stroke="#EF4444"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M12 16h.01"
-                      stroke="#EF4444"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="mb-5">
-            <label
-              htmlFor="phone"
-              className="block text-sm mb-2"
-              style={{
-                fontFamily:
-                  "Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial",
-                fontWeight: 500,
-                color: "#475569",
-              }}
-            >
-              Phone Number
-            </label>
-
-            <div className="relative">
-              <input
-                type="tel"
-                id="phone"
-                value={formData.phone}
-                onChange={handlePhoneChange}
-                onBlur={handlePhoneBlur}
-                placeholder="+1 (555) 123-4567"
-                className="w-full px-4 py-3 outline-none"
-                style={{
-                  border: `1px solid ${phoneError ? "#EF4444" : "#CBD5E1"}`,
-                  borderRadius: 8,
-                  fontFamily:
-                    "Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial",
-                  fontWeight: 400,
-                  color: "#1E293B",
-                  backgroundColor: "white",
-                }}
-                aria-invalid={phoneError}
-              />
-              {phoneError && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="#EF4444"
-                      strokeWidth="1.6"
-                    />
-                    <path
-                      d="M12 7v6"
-                      stroke="#EF4444"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M12 16h.01"
-                      stroke="#EF4444"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <label
-              className="block text-sm mb-2"
-              style={{
-                fontFamily:
-                  "Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial",
-                fontWeight: 500,
-                color: "#475569",
-              }}
-            >
-              Your Resume
+          {/* Resume Upload Area */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700 font-['Sora'] ml-1">
+              Resume (PDF)
             </label>
             <div
-              className={dropZoneClass}
-              onDragEnter={(e) => handleDragEvent(e, "over")}
-              onDragOver={(e) => handleDragEvent(e, "over")}
-              onDragLeave={(e) => handleDragEvent(e, "leave")}
-              onDrop={(e) => handleDragEvent(e, "drop")}
-              onClick={() => document.getElementById("resumeUpload")?.click()}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`
+                relative border-2 border-dashed rounded-xl p-8 mt-1.5 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 group
+                ${isDragging ? "border-[#1287FF] bg-blue-50" : "border-slate-200 hover:border-blue-300 hover:bg-slate-50"}
+                ${resumeFile ? "bg-blue-50/50 border-blue-200" : ""}
+              `}
             >
-              <UploadIcon />
-              <div
-                className="text-sm mt-0"
-                style={{
-                  color: "#64748B",
-                  fontFamily:
-                    "Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial",
-                  lineHeight: 1.2,
-                }}
-              >
-                <span style={{ fontWeight: 600 }}>Click to upload</span>
-                <span style={{ fontWeight: 400 }}> or drag and drop</span>
-              </div>
-
-              <div
-                className="text-xs mt-1"
-                style={{
-                  color: "#64748B",
-                  fontFamily:
-                    "Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial",
-                  fontWeight: 400,
-                }}
-              >
-                PDF, DOC, DOCX (MAX. 5MB)
-              </div>
-
-              {file && (
-                <div
-                  className="text-sm mt-2"
-                  style={{
-                    fontFamily:
-                      "Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial",
-                    fontWeight: 500,
-                    color: "#1287FF",
-                  }}
-                >
-                  {file.name}
-                </div>
-              )}
-
               <input
                 type="file"
-                id="resumeUpload"
-                className="hidden"
-                accept=".pdf,.doc,.docx"
+                ref={fileInputRef}
                 onChange={handleFileChange}
+                accept="application/pdf"
+                className="hidden"
               />
+
+              {resumeFile ? (
+                // Selected New File
+                <div className="text-center animate-fadeIn">
+                  <div className="w-10 h-10 bg-green-100 text-green-500 rounded-lg flex items-center justify-center mx-auto mb-3 shadow-sm">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                  </div>
+                  <p className="text-sm font-medium text-slate-900 font-['Poppins'] truncate max-w-[200px]">
+                    {resumeFile.name}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">Click to change</p>
+                </div>
+              ) : existingResumeUrl ? (
+                // Has existing resume, no new file selected
+                <div className="text-center">
+                  <div className="w-10 h-10 bg-blue-100 text-blue-500 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-200 transition-colors">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                  </div>
+                  <p className="text-sm font-medium text-slate-900 font-['Poppins']">
+                    Current Resume Saved
+                  </p>
+                  <a
+                    href={existingResumeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-xs text-blue-500 hover:text-blue-600 underline mt-1 inline-block"
+                  >
+                    View Resume
+                  </a>
+                  <p className="text-xs text-slate-400 mt-2 font-['Poppins']">
+                    Click to upload a new one
+                  </p>
+                </div>
+              ) : (
+                // No New File Selected and no existing resume
+                <div className="text-center">
+                  <div className="w-10 h-10 bg-slate-100 text-slate-400 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-100 group-hover:text-blue-500 transition-colors">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                  </div>
+                  <p className="text-sm font-medium text-slate-700 font-['Poppins']">
+                    Click to upload or drag & drop
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1 font-['Poppins']">
+                    PDF (max 5MB)
+                  </p>
+                </div>
+              )}
             </div>
-
-            {fileError && (
-              <div
-                className="text-sm mt-2"
-                style={{
-                  color: "#EF4444",
-                  fontFamily:
-                    "Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial",
-                }}
-              >
-                {fileError}
-              </div>
-            )}
           </div>
-        </form>
+        </div>
 
-        {/* footer stuck to bottom of card: divider + 17px gap to button */}
-        <div className="w-full">
-          <div className="w-full h-px bg-[#E2E8F0]"></div>
-          <div className="flex justify-center mt-[17px]">
-            <button
-              type="submit"
-              form="profileForm"
-              className="Button inline-flex cursor-pointer px-[35px] py-3 bg-[#1287FF] rounded-2xl shadow-xl text-white text-[18px] font-['Sora'] font-semibold transition-colors transition-shadow duration-300 ease-in-out hover:shadow-none hover:bg-[#0f6fd6] focus:outline-none focus:ring-2 focus:ring-[#1287FF]/30 items-center justify-center"
-              style={{
-                transition:
-                  "background-color 300ms ease, box-shadow 300ms ease",
-              }}
-            >
-              Confirm
-            </button>
-          </div>
+        {/* --- Footer / Action Button --- */}
+        <div className="mt-8 pt-6">
+          <div className="w-full h-px bg-gray-100 mt-4 mb-4"></div>
+          <button
+            onClick={handleSubmit}
+            disabled={!canSubmit || loading}
+            className={`
+              w-full py-3 rounded-2xl font-['Sora'] font-semibold text-white shadow-lg transition-all focus:outline-none focus:ring-4 focus:ring-blue-200
+              ${
+                !canSubmit || loading
+                  ? "bg-slate-300 cursor-not-allowed shadow-none"
+                  : "bg-[#1287FF] hover:bg-[#0f6fd6] hover:shadow-none"
+              }
+            `}
+          >
+            {loading
+              ? "Saving..."
+              : isEditMode
+                ? "Save Changes"
+                : "Complete Setup"}
+          </button>
         </div>
       </div>
     </div>
   );
 }
-
-export default ProfileForm;

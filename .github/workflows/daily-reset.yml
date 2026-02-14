@@ -1,0 +1,28 @@
+name: Daily Sandbox Reset
+
+on:
+  schedule:
+    # Runs at 08:00 UTC every day (Adjust to your timezone)
+    - cron: "0 8 * * *"
+  workflow_dispatch: # Allows you to run it manually from GitHub UI
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install Dependencies
+        run: npm install firebase-admin
+
+      - name: Run Reset Script
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_STORAGE_BUCKET: "iris-app.firebasestorage.app" # Replace with yours
+        run: node scripts/reset-demo.js

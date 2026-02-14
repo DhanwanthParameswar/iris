@@ -1,27 +1,83 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-// You are about to create these 3 files in the next step
-import MainPage from './pages/MainPage';
-import ProfilePage from './pages/ProfilePage';
-import LibraryPage from './pages/LibraryPage';
-import MicPage from './pages/MicPage';
-import TranscriptPage from './pages/TranscriptPage';
-import AnalysisPage from './pages/AnalysisPage';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
+// Import your existing pages
+import MainPage from "./pages/MainPage";
+import DashboardPage from "./pages/DashboardPage"; // Will become "Dashboard"
+import RecordPage from "./pages/RecordPage"; // Will become "Record"
+import SessionPage from "./pages/SessionPage"; // Will become "Session View"
+import ProfilePage from "./pages/ProfilePage"; // New onboarding page
+
+// Import our new Guards
+import { RequireAuth } from "./components/RequireAuth";
+import { RequireOnboarding } from "./components/RequireOnboarding";
 
 function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        {/* Default page is login */}
-        <Route path="/" element={<MainPage />} /> 
+  const { isLoading } = useAuth0();
 
-        {/* Your other pages */}
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/library" element={<LibraryPage />} />
-        <Route path="/mic" element={<MicPage />} />
-        <Route path="/transcript" element={<TranscriptPage />} />
-        <Route path="/analysis" element={<AnalysisPage />} />
-      </Routes>
-    </BrowserRouter>
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-[#f9fafb]">
+        <div className="bg-white p-8 rounded-3xl shadow-lg w-full max-w-md flex flex-col h-[80vh]"></div>
+      </div>
+    );
+  }
+
+  return (
+    <Routes>
+      {/* PUBLIC ROUTE: The Landing Page */}
+      <Route path="/" element={<MainPage />} />
+
+      {/* PROTECTED ROUTES: The Actual App */}
+
+      <Route
+        path="/profile"
+        element={
+          <RequireAuth>
+            <ProfilePage />
+          </RequireAuth>
+        }
+      />
+
+      {/* 1. The Dashboard (Library) */}
+      <Route
+        path="/dashboard"
+        element={
+          <RequireAuth>
+            <RequireOnboarding>
+              <DashboardPage />
+            </RequireOnboarding>
+          </RequireAuth>
+        }
+      />
+
+      {/* 2. The Recorder */}
+      <Route
+        path="/record"
+        element={
+          <RequireAuth>
+            <RequireOnboarding>
+              <RecordPage />
+            </RequireOnboarding>
+          </RequireAuth>
+        }
+      />
+
+      {/* 3. The Session Viewer (Analysis + Transcript) */}
+      {/* We use :id so we can load specific sessions later */}
+      <Route
+        path="/session/:id"
+        element={
+          <RequireAuth>
+            <RequireOnboarding>
+              <SessionPage />
+            </RequireOnboarding>
+          </RequireAuth>
+        }
+      />
+
+      {/* Fallback: Redirect unknown URLs to home */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
