@@ -91,7 +91,7 @@ async function nukeAndPaveFirebase() {
 
   // 3. Restore Golden Resume
   console.log("⬆️ Uploading Golden Resume...");
-  const resumePath = path.join(__dirname, "seed-data/demo-resume.pdf");
+  const resumePath = path.join(__dirname, "seed-data/jakes-resume.pdf");
 
   // Verify file exists before trying to upload (Debugging step)
   if (!require("fs").existsSync(resumePath)) {
