@@ -66,7 +66,7 @@ async function cleanAuth0Users() {
       console.log(
         `🗑️ Deleting user: ${user.email || "No Email"} (${user.user_id})`,
       );
-      await auth0.users.delete({ id: user.user_id });
+      await auth0.users.delete(user.user_id);
 
       // Tiny throttle
       await new Promise((r) => setTimeout(r, 200));
