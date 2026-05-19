@@ -17,6 +17,7 @@
 	},
 	"dependencies": {
 		"@google/generative-ai": "^0.24.1",
-		"@supabase/supabase-js": "^2.89.0"
+		"@supabase/supabase-js": "^2.89.0",
+		"jose": "^6.2.3"
 	}
 }

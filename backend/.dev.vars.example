@@ -1,0 +1,5 @@
+GEMINI_API_KEY=your-gemini-api-key
+AUTH0_DOMAIN=your-tenant.us.auth0.com
+AUTH0_AUDIENCE=https://your-api-audience
+# Paste the full service account JSON on one line (same as FIREBASE_SERVICE_ACCOUNT GitHub secret)
+FIREBASE_SERVICE_ACCOUNT={"type":"service_account","project_id":"..."}
