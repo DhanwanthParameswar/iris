@@ -1,17 +1,32 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import mascotUrl from "../assets/mascot.svg";
 
 function MainPage() {
-  const { loginWithRedirect, isAuthenticated } = useAuth0();
+  const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
 
+  const isAuthCallback =
+    typeof window !== "undefined" &&
+    (window.location.search.includes("code=") ||
+      window.location.search.includes("state="));
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+
   const handleStart = () => {
+    if (isLoading || isAuthCallback) {
+      return;
+    }
     if (isAuthenticated) {
       navigate("/dashboard");
     } else {
       loginWithRedirect({
-        appState: { targetUrl: "/dashboard" },
+        appState: { returnTo: "/dashboard" },
       });
     }
   };
@@ -61,9 +76,10 @@ function MainPage() {
           {/* Call to Action */}
           <button
             onClick={handleStart}
-            className="px-8 py-4 bg-[#1287FF] hover:bg-[#0f6fd6] text-white text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-200"
+            disabled={isLoading || isAuthCallback}
+            className="px-8 py-4 bg-[#1287FF] hover:bg-[#0f6fd6] disabled:opacity-60 disabled:cursor-wait text-white text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-200"
           >
-            Start Recording
+            {isLoading || isAuthCallback ? "Signing in..." : "Start Recording"}
           </button>
         </div>
       </main>

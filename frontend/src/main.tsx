@@ -21,8 +21,12 @@ const Auth0ProviderWithNavigate = ({
   const navigate = useNavigate();
 
   const onRedirectCallback = (appState?: AppState) => {
-    // If we saved a target URL, go there; otherwise, go to dashboard
-    navigate(appState?.returnTo || "/dashboard");
+    const returnTo =
+      (appState as { returnTo?: string; targetUrl?: string } | undefined)
+        ?.returnTo ??
+      (appState as { targetUrl?: string } | undefined)?.targetUrl ??
+      "/dashboard";
+    navigate(returnTo, { replace: true });
   };
 
   return (
