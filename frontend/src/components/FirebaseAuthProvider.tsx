@@ -55,11 +55,21 @@ export const FirebaseAuthProvider = ({
       } catch (err) {
         if (cancelled) return;
         console.error("Firebase auth sync failed:", err);
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Could not sign in to Firebase. Try logging out and back in.",
-        );
+        const code =
+          err && typeof err === "object" && "code" in err
+            ? String((err as { code: string }).code)
+            : "";
+        if (code === "auth/configuration-not-found") {
+          setError(
+            "Firebase Authentication is not enabled for this project. In Firebase Console → Authentication, click Get started (no sign-in providers required for custom tokens). Also confirm VITE_FIREBASE_PROJECT_ID matches your service account project_id.",
+          );
+        } else {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Could not sign in to Firebase. Try logging out and back in.",
+          );
+        }
         setFirebaseReady(true);
       } finally {
         syncing = false;
@@ -97,8 +107,9 @@ export const FirebaseAuthProvider = ({
       <div className="flex h-screen flex-col items-center justify-center gap-4 bg-[#f9fafb] p-6 text-center">
         <p className="text-red-600">{error}</p>
         <p className="max-w-md text-sm text-gray-600">
-          Ensure the Worker has AUTH0_DOMAIN, AUTH0_AUDIENCE, and
-          FIREBASE_SERVICE_ACCOUNT secrets, then redeploy.
+          If this mentions configuration-not-found, enable Authentication in
+          Firebase Console. Otherwise check Worker secrets (AUTH0_DOMAIN,
+          AUTH0_AUDIENCE, FIREBASE_SERVICE_ACCOUNT) and redeploy.
         </p>
       </div>
     );
